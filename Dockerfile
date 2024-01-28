@@ -2,6 +2,7 @@ FROM node:20.5-alpine
 WORKDIR /app
 COPY package.json ./
 COPY src ./src
+COPY public ./public
 COPY tsconfig.json ./tsconfig.json
 RUN ls -a
 RUN npm install --frozen-lockfile
@@ -13,6 +14,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install --frozen-lockfile --production=true
 COPY --from=0 /app/dist ./dist
+COPY --from=0 /app/public ./public
 EXPOSE 443
 EXPOSE 8080
 CMD ["npm", "start"]
