@@ -1,6 +1,8 @@
 import * as express from "express";
 import * as bodyParser from "body-parser";
 import { sendCommand, serverInfo } from "./palworld/serverApi";
+import * as fs from "fs";
+import * as path from "path";
 
 const app = express();
 app.use(bodyParser.json());
@@ -21,6 +23,16 @@ let infoCache = {
 const CACHE_DURATION = process.env.INFO_CACHE_DURATION_MS
   ? Number(process.env.INFO_CACHE_DURATION_MS)
   : 5000; // 5 second by default
+
+app.get("/", (req, res) => {
+  const indexFile = path.join(__dirname, "../public", "index.html");
+  let content = fs.readFileSync(indexFile, "utf8");
+
+  content = content.replace("{ BEARER_TOKEN }", process.env.BEARER_TOKEN);
+  res.send(content);
+});
+
+app.use(express.static("public"));
 
 app.get("/info", async (req, res) => {
   try {
@@ -71,4 +83,4 @@ app.post("/command", async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Palworld Buddy Running on port ${PORT}`));
+app.listen(PORT, () => console.log(`MPOServer Running on port ${PORT}`));
